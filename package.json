@@ -1,0 +1,19 @@
+{
+  "name": "api-riot-backend",
+  "version": "1.0.0",
+  "description": "This is my version of a Riot games statistics application build with Nuxt3 and NodeJs backend to save old games data.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ychahbar19/api-riot-backend.git"
+  },
+  "author": "ychahbar19",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ychahbar19/api-riot-backend/issues"
+  },
+  "homepage": "https://github.com/ychahbar19/api-riot-backend#readme"
+}
