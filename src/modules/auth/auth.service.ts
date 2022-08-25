@@ -8,7 +8,9 @@ export class AuthService {
     return 'user logged in';
   }
 
-  signup() {
+  signup(body) {
+    console.log(body);
+
     return 'user signed up';
   }
 }
