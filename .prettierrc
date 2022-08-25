@@ -1,4 +1,19 @@
 {
   "singleQuote": true,
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "arrayExpression": true,
+  "objectExpression": true,
+  "arrowFunction": true,
+  "templateLiteral": true,
+  "jsx": true,
+  "jsxFragment": true,
+  "flow": true,
+  "flowObjectColon": true,
+  "flowObjectComma": true,
+  "flowObjectShorthand": true,
+  "flowObjectTypeAnnotation": true,
+  "flowTypeAnnotation": true,
+  "flowTypeCastAnnotation": true,
+  "flowTypeParameterDeclaration": true,
+  "flowTypeParameterInstantiation": true
 }
