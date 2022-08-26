@@ -13,10 +13,11 @@ datasource db {
 // User model for mongodb database
 model User {
   id           String   @id @default(cuid()) @map("_id")
-  username     String   @unique
+  username     String
   email        String   @unique
-  accessToken  String   @unique
-  refreshToken String   @unique
+  password     String
+  accessToken  String?  @unique
+  refreshToken String?  @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
