@@ -30,6 +30,10 @@ export class ConfigService {
           .default('development'),
         PORT: Joi.number().default(3000),
         API_VERSION: Joi.string().default('v1'),
+        JWT_ACCESS_TOKEN_SECRET: Joi.string().required(),
+        JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
+        JWT_ACCESS_TOKEN_EXPIRES_IN: Joi.string().default('15m'),
+        JWT_REFRESH_TOKEN_EXPIRES_IN: Joi.string().default('15m'),
         // JWT_SECRET: Joi.string().required().description('JWT Secret required to sign'),
         // JWT_EXPIRATION_MINUTES: Joi.number()
         //   .default(30)
