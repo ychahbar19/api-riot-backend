@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,14 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User model for mongodb database
 model User {
   id           String   @id @default(cuid()) @map("_id")
-  username     String
   email        String   @unique
   password     String
+  username     String?
   accessToken  String?  @unique
   refreshToken String?  @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  summoners Summoner[]
+
+  @@map("users")
+}
+
+model Summoner {
+  id            String   @id @default(cuid()) @map("_id")
+  accountId     String
+  region        String
+  summonerId    String
+  summonerName  String
+  profileIconId Int
+  revisionDate  DateTime
+  summonerLevel Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  userId String @map("userId")
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map("summoners")
 }
