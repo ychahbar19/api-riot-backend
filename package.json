@@ -6,6 +6,10 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "prisma:db:push": "npx prisma db push",
+    "prisma:db:pull": "npx prisma db pull",
+    "prisma:generate": "npx prisma generate",
+    "prisma:studio": "npx prisma studio",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

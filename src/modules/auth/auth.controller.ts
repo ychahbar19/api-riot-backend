@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpException, Post } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 
@@ -9,12 +9,22 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('auth/login')
-  login(@Body() dto: AuthDto) {
-    return this.authService.login(dto);
+  async login(@Body() dto: AuthDto) {
+    try {
+      const loggedInUser = await this.authService.login(dto);
+      return loggedInUser;
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
   }
 
   @Post('auth/signup')
-  signup(@Body() dto: AuthDto) {
-    return this.authService.signup(dto);
+  async signup(@Body() dto: AuthDto) {
+    try {
+      const signedUpUser = await this.authService.signup(dto);
+      return signedUpUser;
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
   }
 }
