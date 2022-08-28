@@ -23,6 +23,7 @@ export class AuthService {
         password: await argon.hash(dto.password),
       },
     });
+
     const tokens = await getTokens(
       {
         userId: newUser.id,
