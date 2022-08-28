@@ -2,11 +2,12 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 
 import * as argon from 'argon2';
+import { Tokens } from '../types';
 
 const updateRtHash = async (
   data: { rt: string; userId: string },
   prisma: PrismaService,
-): Promise<any> => {
+) => {
   try {
     const hashedRt = await argon.hash(data.rt);
     await prisma.user.update({
@@ -21,7 +22,7 @@ const updateRtHash = async (
 const getTokens = async (
   data: { userId: string; email: string },
   jwtService: JwtService,
-): Promise<any> => {
+): Promise<Tokens> => {
   try {
     const [at, rt] = await Promise.all([
       await jwtService.signAsync(
@@ -31,7 +32,7 @@ const getTokens = async (
         },
         {
           secret: process.env.JWT_ACCESS_TOKEN_SECRET,
-          expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRES_IN,
+          expiresIn: parseInt(process.env.JWT_ACCESS_TOKEN_EXPIRES_IN),
         },
       ),
       await jwtService.signAsync(
@@ -41,7 +42,7 @@ const getTokens = async (
         },
         {
           secret: process.env.JWT_REFRESH_TOKEN_SECRET,
-          expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
+          expiresIn: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN),
         },
       ),
     ]);
