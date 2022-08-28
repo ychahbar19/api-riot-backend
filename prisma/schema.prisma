@@ -12,7 +12,6 @@ model User {
   email        String   @unique
   password     String
   username     String?
-  accessToken  String?  @unique
   refreshToken String?  @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
