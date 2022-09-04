@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { AtGuard } from './guards';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,6 +10,8 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+  // const reflector = new Reflector();
+  // app.useGlobalGuards(new AtGuard(reflector));
   // app.useGlobalFilters();
   // app.useGlobalGuards();
   // app.useGlobalInterceptors();
