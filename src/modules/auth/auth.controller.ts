@@ -1,15 +1,29 @@
-import { Body, Controller, HttpException, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 
 import { AuthDto } from './dto/index';
-import { Tokens } from './types';
+import { Tokens } from './types/index';
+import { RtGuard } from 'src/guards/index';
+import { GetCurrentUser, GetCurrentUserId, Public } from 'src/decorators/index';
+
+const endpoint = 'auth';
 
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('/local/signup')
+  @Public()
+  @Post(`${endpoint}/local/signup`)
+  @HttpCode(HttpStatus.CREATED)
   async signupLocal(@Body() dto: AuthDto): Promise<Tokens> {
     try {
       const signedUpUser = await this.authService.signupLocal(dto);
@@ -19,53 +33,41 @@ export class AuthController {
     }
   }
 
-  // @Post('/local/signin')
-  // async loginLocal(@Body() dto: AuthDto) {
-  //   try {
-  //     const loggedInUser = await this.authService.loginLocal(dto);
-  //     return loggedInUser;
-  //   } catch (error) {
-  //     throw new HttpException(error.message, error.status);
-  //   }
-  // }
+  @Public()
+  @Post(`${endpoint}/local/signin`)
+  @HttpCode(HttpStatus.OK)
+  async loginLocal(@Body() dto: AuthDto): Promise<Tokens> {
+    try {
+      const tokens = await this.authService.loginLocal(dto);
+      return tokens;
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
 
-  // @Post('/logout')
-  // async logout() {
-  //   try {
-  //     await this.authService.logout();
-  //     return true;
-  //   } catch (error) {
-  //     throw new HttpException(error.message, error.status);
-  //   }
-  // }
+  @Post(`${endpoint}/logout`)
+  @HttpCode(HttpStatus.OK)
+  async logout(@GetCurrentUserId() userId: string): Promise<any> {
+    try {
+      return await this.authService.logout(userId);
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
 
-  // @Post('/refresh')
-  // async refresh() {
-  //   try {
-  //     await this.authService.refresh();
-  //     return true;
-  //   } catch (error) {
-  //     throw new HttpException(error.message, error.status);
-  //   }
-  // }
-
-  // @Post('auth/login')
-  // async login(@Body() dto: AuthDto) {
-  //   try {
-  //     const loggedInUser = await this.authService.login(dto);
-  //     return loggedInUser;
-  //   } catch (error) {
-  //     throw new HttpException(error.message, error.status);
-  //   }
-  // }
-
-  // @Post('auth/signup')
-  // async signup(@Body() dto: AuthDto) {
-  //   try {
-  //     const signedUpUser = await this.authService.signup(dto);
-  //     return signedUpUser;
-  //   } catch (error) {
-  //     throw new HttpException(error.message, error.status);
-  //   }
-  // }
+  @Public()
+  @UseGuards(RtGuard)
+  @Post(`${endpoint}/refresh`)
+  @HttpCode(HttpStatus.OK)
+  async refresh(
+    @GetCurrentUserId() userId: string,
+    @GetCurrentUser('refreshToken') refreshToken: string,
+  ): Promise<Tokens> {
+    try {
+      const tokens = await this.authService.refresh(userId, refreshToken);
+      return tokens;
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
 }
