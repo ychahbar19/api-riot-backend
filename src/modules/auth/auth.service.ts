@@ -3,7 +3,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './dto/index';
 
 import * as argon from 'argon2';
-// import { Prisma } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { Tokens } from './types/index';
 
@@ -99,7 +98,8 @@ export class AuthService {
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
       });
-      if (!user) throw new HttpException('User not found', 404);
+      if (!user || !user.refreshToken)
+        throw new HttpException('Access Denied', 404);
 
       const rtMatches = await argon.verify(user.refreshToken, refreshToken);
       if (!rtMatches) throw new HttpException('Invalid refresh token', 401);

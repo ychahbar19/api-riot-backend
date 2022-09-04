@@ -15,12 +15,14 @@ import { Tokens } from './types/index';
 import { RtGuard } from 'src/guards/index';
 import { GetCurrentUser, GetCurrentUserId, Public } from 'src/decorators/index';
 
+const endpoint = 'auth';
+
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
-  @Post('local/signup')
+  @Post(`${endpoint}/local/signup`)
   @HttpCode(HttpStatus.CREATED)
   async signupLocal(@Body() dto: AuthDto): Promise<Tokens> {
     try {
@@ -32,7 +34,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post('local/signin')
+  @Post(`${endpoint}/local/signin`)
   @HttpCode(HttpStatus.OK)
   async loginLocal(@Body() dto: AuthDto): Promise<Tokens> {
     try {
@@ -43,7 +45,7 @@ export class AuthController {
     }
   }
 
-  @Post('logout')
+  @Post(`${endpoint}/logout`)
   @HttpCode(HttpStatus.OK)
   async logout(@GetCurrentUserId() userId: string): Promise<any> {
     try {
@@ -55,7 +57,7 @@ export class AuthController {
 
   @Public()
   @UseGuards(RtGuard)
-  @Post('refresh')
+  @Post(`${endpoint}/refresh`)
   @HttpCode(HttpStatus.OK)
   async refresh(
     @GetCurrentUserId() userId: string,
