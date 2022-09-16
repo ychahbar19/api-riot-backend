@@ -23,12 +23,13 @@ model User {
 
 model Summoner {
   id            String   @id @default(cuid()) @map("_id")
-  accountId     String
+  accountId     String   @unique
+  puuid         String   @unique
   region        String
-  summonerId    String
-  summonerName  String
+  server        String
+  name          String
   profileIconId Int
-  revisionDate  DateTime
+  revisionDate  Int
   summonerLevel Int
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -36,5 +37,29 @@ model Summoner {
   userId String @map("userId")
   user   User   @relation(fields: [userId], references: [id])
 
+  ranks Rank[]
+
   @@map("summoners")
+}
+
+model Rank {
+  id           String   @id @default(cuid()) @map("_id")
+  leagueId     String   @unique
+  queueType    String
+  tier         String
+  rank         String
+  leaguePoints Int
+  wins         Int
+  losses       Int
+  hotStreak    Boolean
+  veteran      Boolean
+  freshBlood   Boolean
+  inactive     Boolean
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  summonerId String   @map("summonerId")
+  summoner   Summoner @relation(fields: [summonerId], references: [id])
+
+  @@map("ranks")
 }
