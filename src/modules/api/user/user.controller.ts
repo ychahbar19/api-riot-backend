@@ -8,6 +8,9 @@ import {
 import { GetCurrentUserId } from 'src/decorators';
 import { UserService } from './user.service';
 
+// INTERFACES
+import { UserResponse } from '../../../interfaces/user/user.interface';
+
 const endpoint = 'user';
 
 @Controller()
@@ -17,7 +20,7 @@ export class UserController {
   // TODO: add Prisma model types to promises
   @Get(`${endpoint}/me`)
   @HttpCode(200)
-  async me(@GetCurrentUserId() userId: string): Promise<object> {
+  async me(@GetCurrentUserId() userId: string): Promise<UserResponse> {
     try {
       const user = await this.userService.getUserById(userId);
       return user;
@@ -28,7 +31,7 @@ export class UserController {
   // TODO: add Prisma model types to promises
   @Get(`${endpoint}/:id`)
   @HttpCode(200)
-  async getUserById(@Param('id') userId: string): Promise<object> {
+  async getUserById(@Param('id') userId: string): Promise<UserResponse> {
     try {
       const user = await this.userService.getUserById(userId);
       return user;

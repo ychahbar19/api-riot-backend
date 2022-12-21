@@ -1,12 +1,13 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+
+import { UserResponse } from 'src/interfaces/user/user.interface';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getUserById(id: string): Promise<object> {
+  async getUserById(id: string): Promise<UserResponse> {
     try {
       const user = await this.prisma.user.findUnique({
         where: { id },

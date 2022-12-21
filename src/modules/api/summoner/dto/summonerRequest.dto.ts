@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class SummonerDto {
+export class SummonerRequestDto {
   @IsString()
   @IsNotEmpty()
   readonly region: string;
@@ -9,7 +9,7 @@ export class SummonerDto {
   readonly server: string;
   @IsString()
   @IsNotEmpty()
-  readonly id: string;
+  readonly summonerId: string;
   @IsString()
   @IsNotEmpty()
   readonly accountId: string;
