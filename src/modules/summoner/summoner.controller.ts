@@ -101,11 +101,38 @@ export class SummonerController {
     @Body() dto: SummonerDto,
   ): Promise<object> {
     try {
-      const summoner: any = await this.summonerService.createSummoner(
+      const summoner: object = await this.summonerService.createSummoner(
         userId,
         dto,
       );
       return summoner;
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
+  // refactor update to single summmoner
+  @Get(`${endpoint}/update/:summonerId`)
+  @HttpCode(200)
+  async getSummonerUpdates(
+    @GetCurrentUserId() userId: string,
+    @Param('summonerId') summonerId: string,
+  ): Promise<object> {
+    try {
+      const dbSummoner: object =
+        await this.summonerService.findSummonerBySummonerId(userId, summonerId);
+      const fetchedSummoner: object =
+        await this.summonerService.getSummonerByIdAndPlatform(
+          summonerId,
+          dbSummoner['server'],
+          dbSummoner['region'],
+        );
+      // const updatedSummoners: Array<object> =
+      //   await this.summonerService.compareAndUpdateSummoners(
+      //     dbSummoners,
+      //     fetchedSummoners,
+      //   );
+      return dbSummoner;
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
