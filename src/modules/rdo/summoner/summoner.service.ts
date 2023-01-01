@@ -1,44 +1,35 @@
 import { HttpService } from '@nestjs/axios';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { HttpException, Injectable } from '@nestjs/common';
 
-import {
-  getAllRoutingPlatform,
-  getRegionFromRoutingPlatform,
-  getServerFromRoutingPlatform,
-} from 'src/utils';
+import { getAllRoutingPlatform, getServerAndRegion } from 'src/utils';
 
-import { SummonerRequestDto } from './dto';
-import { SummonerDto } from '../../../interfaces/dto/v4/summoner.dto';
-import { SummonerResponse } from 'src/interfaces/summoner/summoner.interface';
+import { SummonerApiResponse } from 'src/interfaces/summoner/summoner.interface';
 
 @Injectable()
-export class SummonerService {
-  constructor(
-    private readonly httpService: HttpService,
-    private readonly prisma: PrismaService,
-  ) {}
-  async getSummonersByName(name: string): Promise<SummonerResponse[]> {
+export class SummonerRdoService {
+  private readonly headers = {
+    'X-Riot-Token': process.env.RIOT_API_KEY,
+  };
+  constructor(private readonly httpService: HttpService) {}
+
+  async getSummonersByName(name: string): Promise<SummonerApiResponse[]> {
     try {
       const riotRoutingPlatforms: string[] = getAllRoutingPlatform();
-      const headers = {
-        'X-Riot-Token': process.env.RIOT_API_KEY,
-      };
 
       const summoners = [];
       await Promise.all(
         riotRoutingPlatforms.map(async (platform) => {
           try {
-            const region: string = getRegionFromRoutingPlatform(platform);
-            const server: string = getServerFromRoutingPlatform(platform);
-            const summoner = await this.httpService.axiosRef.get(
+            const { server, region } = getServerAndRegion({ platform });
+
+            const summoner = await this.httpService.get(
               `https://${server}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}`,
-              { headers },
+              { headers: this.headers },
             );
             summoners.push({
               server,
               region,
-              ...summoner.data,
+              ...summoner,
             });
           } catch (error) {
             if (error.response.status === 404) return;
@@ -56,15 +47,11 @@ export class SummonerService {
     name: string,
     server: string,
     region: string,
-  ): Promise<SummonerResponse> {
+  ): Promise<SummonerApiResponse> {
     try {
-      const headers = {
-        'X-Riot-Token': process.env.RIOT_API_KEY,
-      };
-
       const summoner = await this.httpService.axiosRef.get(
         `https://${server}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}`,
-        { headers },
+        { headers: this.headers },
       );
 
       return {
@@ -77,20 +64,21 @@ export class SummonerService {
     }
   }
 
-  async getSummonerByIdAndPlatform(
-    id: string,
-    server: string,
-    region: string,
-  ): Promise<SummonerResponse> {
+  async getSummonerByPuuidAndPlatform(
+    puuid: string,
+    platform: string,
+  ): Promise<SummonerApiResponse> {
     try {
-      const headers = {
-        'X-Riot-Token': process.env.RIOT_API_KEY,
-      };
+      const { server, region } = getServerAndRegion({ platform });
 
       const summoner = await this.httpService.axiosRef.get(
-        `https://${server}${process.env.LOL_API_URL}${process.env.GET_SUMMONER_BY_ID}${id}`,
-        { headers },
+        `https://${server}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}`,
+        { headers: this.headers },
       );
+      delete Object.assign(summoner.data, {
+        ['summonerId']: summoner.data['id'],
+      })['id'];
+
       return {
         server,
         region,
