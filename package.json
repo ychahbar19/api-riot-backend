@@ -44,6 +44,7 @@
     "joi": "^17.6.0",
     "joigoose": "^8.0.2",
     "lodash": "^4.17.21",
+    "moment": "^2.29.4",
     "mongoose": "^6.5.2",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
