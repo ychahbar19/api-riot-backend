@@ -8,12 +8,15 @@ import {
   HttpException,
 } from '@nestjs/common';
 
+import { ApiController } from '../api-controller';
 import { SummonerService } from './summoner.service';
 
 @Controller()
-export class SummonerController {
-  private endpoint = 'summoner';
-  constructor(private readonly summonerService: SummonerService) {}
+export class SummonerController extends ApiController {
+  constructor(private readonly summonerService: SummonerService) {
+    const childEndpoint = 'summoner';
+    super(childEndpoint);
+  }
 
   // @Post(`${endpoint}/create`)
   // @HttpCode(201)
