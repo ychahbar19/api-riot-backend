@@ -1,17 +1,13 @@
 import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Prisma, Summoner } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-
-import {
-  getAllRoutingPlatform,
-  getRegionFromRoutingPlatform,
-  getServerFromRoutingPlatform,
-} from 'src/utils';
 
 import { SummonerRequestDto } from './dto';
 import { SummonerDto } from '../../../interfaces/dto/v4/summoner.dto';
-import { SummonerResponse } from 'src/interfaces/summoner/summoner.interface';
+
+import { Summoner } from '@prisma/client';
+import { CreateSummoner } from 'src/interfaces/summoner/summoner.interface';
+import { PublicUser } from 'src/interfaces/user/user.interface';
 
 @Injectable()
 export class SummonerService {
@@ -20,6 +16,62 @@ export class SummonerService {
     private readonly prisma: PrismaService,
   ) {}
 
+  async getSummonerById(summonerId: string): Promise<Summoner> {
+    try {
+      const summoner = await this.prisma.summoner.findUnique({
+        where: { summonerId },
+      });
+      return summoner;
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
+  async getSummonerByPuuid(puuid: string): Promise<Summoner> {
+    try {
+      const summoner = await this.prisma.summoner.findUnique({
+        where: { puuid },
+      });
+      return summoner;
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
+  async createOrUpdateSummoner(
+    summoner: CreateSummoner,
+    user: PublicUser,
+  ): Promise<Summoner> {
+    try {
+      const summonerDB = await this.prisma.summoner.findUnique({
+        where: { summonerId: summoner.summonerId },
+      });
+      if (!summonerDB) {
+        const newSummoner = await this.prisma.summoner.create({
+          data: {
+            ...summoner,
+            user: {
+              connect: { id: user.id },
+            },
+          },
+        });
+        return newSummoner;
+      } else {
+        const updatedSummoner = await this.prisma.summoner.update({
+          where: { summonerId: summoner.summonerId },
+          data: {
+            ...summoner,
+            user: {
+              connect: { id: user.id },
+            },
+          },
+        });
+        return updatedSummoner;
+      }
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
   // async createSummoner(
   //   userId: string,
   //   summoner: SummonerRequestDto,
