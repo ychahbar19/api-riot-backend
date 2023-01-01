@@ -1,27 +1,49 @@
-interface SummonerDB {
+import { Prisma } from '@prisma/client';
+
+// interface SummonerDB {
+//   server: true;
+//   region: true;
+//   summonerId: true;
+//   accountId: true;
+//   name: true;
+//   summonerLevel: true;
+//   profileIconId: true;
+//   revisionDate: true;
+//   puuid: true;
+//   userId: true;
+//   createdAt: Date;
+//   updatedAt: Date;
+// }
+
+interface SummonerApiResponse {
   server: string;
   region: string;
   summonerId: string;
   accountId: string;
-  summonerName: string;
+  name: string;
   summonerLevel: number;
   profileIconId: number;
   revisionDate: number;
-  createdAt: Date;
-  updatedAt: Date;
+  puuid: string;
+  createdAt?: string;
+  updatedAt?: string;
+  userId?: string;
 }
 
-interface SummonerResponse {
-  server: string;
-  region: string;
-  summonerId: string;
-  accountId: string;
-  summonerName: string;
-  summonerLevel: number;
-  profileIconId: number;
-  revisionDate: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+const createSummoner = Prisma.validator<Prisma.SummonerArgs>()({
+  select: {
+    server: true,
+    region: true,
+    summonerId: true,
+    accountId: true,
+    name: true,
+    summonerLevel: true,
+    profileIconId: true,
+    revisionDate: true,
+    puuid: true,
+  },
+});
 
-export { SummonerDB, SummonerResponse };
+type CreateSummoner = Prisma.SummonerGetPayload<typeof createSummoner>;
+
+export { CreateSummoner, SummonerApiResponse };
