@@ -70,6 +70,7 @@ export class ConfigService {
           GET_SUMMONER_BY_NAME: Joi.string()
             .default('/summoner/v4/summoners/by-name/')
             .required(),
+          REDIS_EXPIRATION_TIME: Joi.number().default(86400),
         }).unknown();
       };
 
@@ -104,6 +105,9 @@ export class ConfigService {
           // jwtRefreshExpirationDays: envVars.JWT_REFRESH_EXPIRATION_DAYS,
           mongo: {
             uri: mongoDB_URI,
+          },
+          redis: {
+            expirationTime: envVars.REDIS_EXPIRATION_TIME,
           },
         };
         return config;
