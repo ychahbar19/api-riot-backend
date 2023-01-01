@@ -7,5 +7,6 @@ import { SummonerService } from './summoner.service';
   imports: [HttpModule],
   controllers: [SummonerController],
   providers: [SummonerService],
+  exports: [SummonerService],
 })
 export class SummonerModule {}
