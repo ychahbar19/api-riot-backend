@@ -1,3 +1,5 @@
+import { HttpException } from '@nestjs/common';
+
 const getRegionFromRoutingPlatform = (routingPlatform: string): string => {
   const region = routingPlatform.split(':')[0];
   return region;
@@ -29,10 +31,20 @@ const getAllRoutingPlatform = (): string[] => {
   return routingPlatforms;
 };
 
+const getServerAndRegion = (dto: { platform: string }) => {
+  const riotRoutingPlatforms: string[] = getAllServersFromRoutingPlatforms();
+  const server: string = getServerFromRoutingPlatform(dto.platform);
+  const region: string = getRegionFromRoutingPlatform(dto.platform);
+
+  if (!riotRoutingPlatforms.includes(server))
+    throw new HttpException('Invalid platform', 400);
+
+  return { server, region };
+};
+
 export {
+  getServerAndRegion,
+  getAllRoutingPlatform,
   getAllServersFromRoutingPlatforms,
   getAllRegionsFromRoutingPlatforms,
-  getAllRoutingPlatform,
-  getRegionFromRoutingPlatform,
-  getServerFromRoutingPlatform,
 };
