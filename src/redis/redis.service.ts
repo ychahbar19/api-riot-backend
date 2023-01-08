@@ -6,8 +6,6 @@ export class RedisService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
   async get(key: string): Promise<any> {
-    console.log(typeof key);
-
     return await this.cacheManager.get(key);
   }
 
