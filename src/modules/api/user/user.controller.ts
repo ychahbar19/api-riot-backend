@@ -7,6 +7,7 @@ import {
   Post,
   HttpStatus,
   Body,
+  Delete,
 } from '@nestjs/common';
 
 import { isBeforeOrEqual } from 'src/utils/date.util';
@@ -28,9 +29,6 @@ import { getServerAndRegion } from 'src/utils';
 import { SummonerBuilder } from 'src/builders/summoner/summoner.builder';
 
 const endpoint = 'user';
-
-// TODO: refactor getSummonerRegionAndServer
-// TODO: refacto create builder pattern for entities
 
 enum LinkRequestStatus {
   NOT_FOUND = 'Summoner not found',
@@ -78,14 +76,15 @@ export class UserController {
   ): Promise<void> {
     try {
       const user = await this.userService.getUserById(userId);
-
       if (!user) throw new HttpException(LinkRequestStatus.NOT_FOUND, 404);
+
       const summoner = await this.summonerService.getSummonerByPuuid(
         dto.summonerPuuid,
       );
-      if (summoner && summoner.userId === userId) {
+
+      if (summoner?.userId && summoner.userId === userId) {
         throw new HttpException(LinkRequestStatus.ALREADY_LINKED, 400);
-      } else if (summoner && summoner.userId !== userId) {
+      } else if (summoner?.userId && summoner.userId !== userId) {
         throw new HttpException(
           LinkRequestStatus.ALREADY_LINKED_OTHER_USER,
           400,
@@ -158,6 +157,32 @@ export class UserController {
         );
         await this.redisService.del(userId);
       }
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
+  @Delete(`${endpoint}/unlink/:summonerId`)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async unlinkSummonerFromUser(
+    @Param('summonerId') summonerId: string,
+    @GetCurrentUserId() userId: string,
+  ): Promise<void> {
+    try {
+      const user = await this.userService.getUserById(userId);
+      if (!user) throw new HttpException(LinkRequestStatus.NOT_FOUND, 404);
+
+      const summoner = await this.summonerService.getSummonerById(summonerId);
+      if (
+        !user.summoners.filter((summoner) => summoner.summonerId === summonerId)
+          .length
+      )
+        throw new HttpException(LinkRequestStatus.NOT_FOUND, 404);
+
+      if (summoner.userId !== userId)
+        throw new HttpException(LinkRequestStatus.NOT_FOUND, 404);
+
+      await this.userService.unlinkSummonerFromUser(user, summonerId);
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
