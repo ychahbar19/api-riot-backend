@@ -9,5 +9,5 @@ export class Summoner {
   summonerLevel: number;
   region: string;
   server: string;
-  userId: string;
+  userId?: string;
 }
