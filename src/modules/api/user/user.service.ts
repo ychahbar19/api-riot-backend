@@ -44,4 +44,32 @@ export class UserService {
       throw new HttpException(error.message, error.status);
     }
   }
+
+  async unlinkSummonerFromUser(
+    user: PublicUser,
+    summonerId: string,
+  ): Promise<void> {
+    try {
+      const summonerDB = await this.prisma.summoner.findUnique({
+        where: { summonerId },
+      });
+      if (!summonerDB) throw new HttpException('Summoner not found', 404);
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          summoners: {
+            disconnect: { summonerId },
+          },
+        },
+      });
+      await this.prisma.summoner.update({
+        where: { summonerId },
+        data: {
+          userId: '',
+        },
+      });
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
 }
