@@ -21,7 +21,12 @@ const dtoModules = [SummonerRdoModule];
 const apiModules = [AuthModule, UserModule, SummonerModule];
 @Module({
   imports: [
-    HttpModule,
+    HttpModule.registerAsync({
+      useFactory: () => ({
+        timeout: 5000,
+        maxRedirects: 5,
+      }),
+    }),
     CacheModule.register({
       isGlobal: true,
       store: redisStore,
