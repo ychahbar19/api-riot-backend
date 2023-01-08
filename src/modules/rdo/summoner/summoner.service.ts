@@ -22,14 +22,15 @@ export class SummonerRdoService {
           try {
             const { server, region } = getServerAndRegion({ platform });
 
-            const summoner = await this.httpService.get(
+            const summoner = await this.httpService.axiosRef.get(
               `https://${server}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${name}`,
               { headers: this.headers },
             );
+
             summoners.push({
               server,
               region,
-              ...summoner,
+              ...summoner.data,
             });
           } catch (error) {
             if (error.response.status === 404) return;
