@@ -6,12 +6,11 @@ import {
   HttpException,
 } from '@nestjs/common';
 
-import { GetCurrentUserId, Public } from 'src/decorators';
+import { Public } from 'src/decorators';
 import { getServerAndRegion } from 'src/utils';
 
 import { SummonerRdoService } from './summoner.service';
 
-import { SummonerRequestDto } from './dto/index';
 import { SummonerApiResponse } from 'src/interfaces/summoner/summoner.interface';
 
 const endpoint = 'summoner';
